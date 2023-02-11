@@ -180,43 +180,44 @@
      (let* ((ast (org-noter--parse-root))
             (top-level (or (org-element-property :level ast) 0))
             (output-data (mpv-get-property "chapter-list")))
+       (if (= (length output-data) 0)
+           (message "This video has no outline")
 
-       (org-noter--insert-heading 2 "Skeleton")
+         (org-noter--insert-heading 2 "Skeleton")
+         (with-current-buffer (org-noter--session-notes-buffer session)
+           ;; NOTE(nox): org-with-wide-buffer can't be used because we want to reset the
+           ;; narrow region to include the new headings
+           (widen)
+           (save-excursion
 
-       (with-current-buffer (org-noter--session-notes-buffer session)
-         ;; NOTE(nox): org-with-wide-buffer can't be used because we want to reset the
-         ;; narrow region to include the new headings
-         (widen)
-         (save-excursion
+             (let (last-absolute-level
+                   title location
+                   level)
 
-           (let (last-absolute-level
-                 title location
-                 level)
+               (dolist (data (append output-data nil))
+                 (setq title (alist-get 'title data)
+                       location (alist-get 'time data))
 
-             (dolist (data (append output-data nil))
-               (setq title (alist-get 'title data)
-                     location (alist-get 'time data))
+                 (setq last-absolute-level (+ top-level 2)
+                       level last-absolute-level)
 
-               (setq last-absolute-level (+ top-level 2)
-                     level last-absolute-level)
+                 (org-noter--insert-heading level title)
 
-               (org-noter--insert-heading level title)
+                 (when location
+                   (org-entry-put nil org-noter-property-note-location
+                                  (org-noter--pretty-print-location location)))
 
-               (when location
-                 (org-entry-put nil org-noter-property-note-location
-                                (org-noter--pretty-print-location location)))
+                 (when org-noter-doc-property-in-notes
+                   (org-entry-put nil org-noter-property-doc-file
+                                  (org-noter--session-property-text session))
+                   (org-entry-put nil org-noter--property-auto-save-last-location "nil"))))
 
-               (when org-noter-doc-property-in-notes
-                 (org-entry-put nil org-noter-property-doc-file
-                                (org-noter--session-property-text session))
-                 (org-entry-put nil org-noter--property-auto-save-last-location "nil"))))
-
-           (setq ast (org-noter--parse-root))
-           (org-noter--narrow-to-root ast)
-           (goto-char (org-element-property :begin ast))
-           (when (org-at-heading-p) (outline-hide-subtree))
-           (org-show-children 2)))
-       output-data))))
+             (setq ast (org-noter--parse-root))
+             (org-noter--narrow-to-root ast)
+             (goto-char (org-element-property :begin ast))
+             (when (org-at-heading-p) (outline-hide-subtree))
+             (org-show-children 2)))
+         output-data)))))
 
 (add-to-list 'org-noter-create-skeleton-functions #'org-noter-media-create-skeleton)
 

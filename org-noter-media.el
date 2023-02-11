@@ -168,7 +168,7 @@
 
 (add-to-list 'org-noter-get-selected-text-hook #'org-noter-media--get-sub-text)
 
-(defun org-noter-media-goto-location (mode location)
+(defun org-noter-media-goto-location (mode location &optional window)
   (when (org-noter-media-check-doc mode)
     (org-media-note--seek-position-in-current-media-file location)))
 

@@ -225,9 +225,20 @@
    (save-excursion
      (pcase property
        ("path" (org-noter--session-property-text session))
-       ("media-title" (progn (while (org-up-heading-safe))
-                             (or (org-entry-get nil "title")
-                                 (nth 4 (org-heading-components)))))))))
+       ("ab-loop-a" "no")
+       ("ab-loop-b" "no")
+       ("media-title"
+        (cond ((file-exists-p (org-noter--session-property-text session))
+               (file-name-base (org-noter--session-property-text session)))
+              
+              ((org-before-first-heading-p)
+               (or (org-entry-get nil "title" t)
+                   (cadar (org-collect-keywords '("TITLE")))))
+
+              (t (while (org-up-heading-safe))
+                 (or (org-entry-get nil "title" t)
+                     (cadar (org-collect-keywords '("TITLE")))
+                     (nth 4 (org-heading-components))))))))))
 
 (advice-add 'mpv-get-property :before-until #'org-noter-media--mpv-property-ad)
 

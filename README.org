@@ -6,21 +6,21 @@
   - +Not ready for use+
   - If you want to contribute, you are more than welcome to.
 * Caveat & Installation
-** Incompatible with upstream org-noter
+** Incompatibility with upstream org-noter
 The way org-noter originally works is that it will call ~find-file~ on the value of =NOTER_DOCUMENT=, resulting
 in a new buffer then, get the ~major-mode~ of this new buffer to call the appropriate functions for the mode.
 
 For example, if your =NOTER_DOCUMENT= is a path to a pdf file, org-noter will call ~find-file~ resulting in a new buffer
 with in the ~major-mode~ called ~pdf-view-mode~. Org-noter then passes the ~pdf-view-mode~ to various function to handle the mode as expected.
 
-This breaks down, however, when our =NOTER_DOCUMENT= is a binary file (mp3, mp4, etc.) that Emacs has no mode to handle yet.
+This breaks down, however, when our =NOTER_DOCUMENT= is a binary file (mp3, mp4, etc.) that Emacs has no mode to handle or a URL.
 
-If only we can customize the way org-noter find its =NOTER_DOCUMENT= and try to remove ~major-mode~ for the equation.
+If only we can customize the way org-noter find its =NOTER_DOCUMENT= and try to remove ~major-mode~ from the equation.
 
-** Link-as-doc
-This modified version of org-noter can handle =[[links]]= as its source document.
+** The implementation
+This modified version of org-noter can handle URL as its source document.
 
-See https://github.com/c1-g/org-noter-plus-djvu/tree/link-as-doc.
+See https://github.com/c1-g/org-noter-plus-djvu.
 
 To install it, with [[https://github.com/radian-software/straight.el.git][straight.el]] and [[https://github.com/jwiegley/use-package][use-package]],
 
@@ -32,7 +32,6 @@ put these in your config file.
                           :host github
                           :repo "weirdNox/org-noter"
                           :fork "c1-g/org-noter-plus-djvu"
-                          :branch "link-as-doc"
                           :files ("other/*.el" "*.el" "modules/*.el"))
     :config
     (use-package org-noter-nov :ensure nil)
@@ -50,13 +49,13 @@ and then to install this package,
 #+end_src
 
 * DONE Integration with mpv player 
-- Planning to use JSON IPC 
-  - [[https://github.com/kljohann/mpv.el/wiki][Home · kljohann/mpv.el Wiki · GitHub]]
-  - [[https://github.com/rndusr/subed][GitHub - rndusr/subed: Subtitle editor for Emacs]] 
+- +Planning to use JSON IPC+
+- [[https://github.com/kljohann/mpv.el/wiki][Home · kljohann/mpv.el Wiki · GitHub]]
+- +[[https://github.com/rndusr/subed][GitHub - rndusr/subed: Subtitle editor for Emacs]]+
 * DONE Operations
 ** Inserting [1/1]
 - [X] =org-noter-insert-note=
-** Synchronising [1/1]
+** Synchronizing [1/1]
 - [X] =org-noter-sync-current-note=
 ** Media player specific [0/1]
 - [-] =org-noter-media-toggle-play=
